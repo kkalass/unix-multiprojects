@@ -1,5 +1,5 @@
-MultiProjectSwitcher
-====================
+Unix-MultiProjectS
+==================
 
 Helper scripts and conventions to support simple switching between different project setups.
 
@@ -34,8 +34,92 @@ working directory will be changed to $CSW of the named project.
 Setup
 -----
 
+0. Checkout unix-multiprojects
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Checkout this project anywhere you like :-)
+
+1. Adjust your ~/.bashrc
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+You will need to source the multiprojects-setup file for each new shell.
+I put the following in my ~/.bashrc :
+
 ---------------------------------------------
-	.bashrc
+	#
+	# My own settings for the multiprojects setup
+	#
+	MP_PROJECTS_ROOT="/home/klas/Projekte"
+	MP_BIN="/opt/multiprojects/bin" # set this to wherever your multiprojects checkout is
+
+	# Initialize the multiprojects setup, will source the default project if that was set
+	. "$MP_BIN"/mp-setup.sh
+	
 ---------------------------------------------
 
+2. Add a "setup-dev-env.sh" file to each relevant project
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+For each project underneath your projects root directory you may add a separate file 'setup-dev-env.sh' which will be sourced to read-in all your environment variables.
+
+Example for a very simple setup-dev-env.sh:
+
+----------------------------------------------
+#!/bin/bash
+
+#
+# project specific configuration 
+#
+PROJECT_HOME="`mpFindProjectHome csnotes`"
+PROJECT_DEV_BASE="$PROJECT_HOME/src/work"
+
+# conventions, you should define those for every project
+export CSW="$PROJECT_DEV_BASE"
+alias cdw-csnotes="cd \"$PROJECT_DEV_BASE\""
+alias cdw=cdw-csnotes
+----------------------------------------------
+
+But maybe you fancy a more involved setup for your ecommerce projects, like:
+
+----------------------------------------------
+#!/bin/bash
+
+#
+# project specific configuration 
+#
+PROJECT_HOME="`mpFindProjectHome someprojectname`"
+PROJECT_DEV_BASE="$PROJECT_HOME/src/work"
+PROJECT_TOMCAT="$PROJECT_HOME/app/tomcat/"
+
+# conventions, you should define those for every project
+export CSW="$PROJECT_HOME/src/work"
+alias cdw-someproj="cd \"$PROJECT_DEV_BASE\""
+alias cdw=cdw-someproj
+
+# further project specific variables and aliases
+alias cd-someproj="cd $PROJECT_HOME"
+
+alias cdtom="cd $PROJECT_TOMCAT"
+alias eclipse-someproj="export GDK_NATIVE_WINDOWS=true; $PROJECT_HOME/local/opt/eclipse-helios/eclipse -vm /home/klas/Lokal/java/jdk/bin  -showlocation -data $PROJECT_HOME/eclipse-workspace -vmargs  -Xms768M -Xmx768M -XX:MaxPermSize=512m -Duser.name=\"Klas Kalass (klas.kalass@freiheit.com)\"   > /dev/null 2>&1 </dev/zero &"
+
+alias catalina-someproj="export CATALINA_OPTS=\"-Dfile.encoding=ISO-8859-1 -Djava.awt.headless=true\";$PROJECT_TOMCAT/bin/catalina.sh"
+
+alias solr-someproj="export CATALINA_OPTS=\"-Dfile.encoding=ISO-8859-1 -Djava.awt.headless=true\";$PROJECT_HOME/app/solr/bin/catalina.sh"
+
+export PATH="$PROJECT_HOME/bin:$PATH"
+export ANT_OPTS="$ANT_OPTS -Xmx384M"
+export JAVA_OPTS="$JAVA_OPTS  -server -Xss256k -Xms512M -Xmx768M -XX:MaxPermSize=512m"
+----------------------------------------------
+
+In every new shell you open now, you will have an alias for each of your configured projects.
+
+3. Set the default project
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+You will probably want to always have the environment for the project you are currently working on automatically set up on login.
+To achieve this, you can use the following command (only works when mp-setup.sh sourced with the correct environment vars available).
+
+-----------------------------------------------
+	$ mpSetDefault csnotes
+-----------------------------------------------
+
+Now, every shell that was not manually switched to a different project will go to the csnotes-working directory when you type "cdw".
