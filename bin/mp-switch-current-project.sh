@@ -2,12 +2,10 @@
 PROJECT=$1
 
 if [ -z "$PROJECT" ] ; then
-    echo "usage: $0 <PROJECTNAME>"
-    echo "Suggestion: use one of"
-    mpListProjects
+    echo "Illegal usage, supply a valid project name"
 else
 
-    SETUPFILE="`mpFindSetupfile $PROJECT`"
+    SETUPFILE="`mpFindSetupfile "$PROJECT"`"
 
     if [ ! -f "$SETUPFILE" ] ; then
 	echo "Illegal Project Name $PROJECT: could not find setup file $SETUPFILE"

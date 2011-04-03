@@ -1,19 +1,36 @@
 MP_SETUPFILE_BASENAME=${MP_SETUPFILE_BASENAME=setup-dev-env.sh}
 
+#
+# Erzeugt ein Array-Konstruktor mit allen Projekten
+#
 function mpListProjects {
-    find "$MP_PROJECTS_ROOT/"  -maxdepth 2 -mindepth 1 -name "$MP_SETUPFILE_BASENAME" | sed -n "s#$MP_PROJECTS_ROOT/\([^/]*\)/$MP_SETUPFILE_BASENAME#\t\1#gp"
+    echo "("
+    for root in "${MP_PROJECTS_ROOT[@]}" ; do
+        find "$root/"  -maxdepth 2 -mindepth 1 -name "$MP_SETUPFILE_BASENAME" | sed -n "s#$root/\([^/]*\)/$MP_SETUPFILE_BASENAME#\t\"\1\"#gp"
+    done
+    echo ")"
 }
 
 function mpFindSetupfile {
     local PROJECT=$1
-    local FILE="$MP_PROJECTS_ROOT/$PROJECT/$MP_SETUPFILE_BASENAME"
-    echo $FILE
+    for root in "${MP_PROJECTS_ROOT[@]}" ; do
+       local FILE="$root/$PROJECT/$MP_SETUPFILE_BASENAME"
+       if [ -f "$FILE" ] ; then
+           echo $FILE
+           return
+       fi
+    done
 }
 
 function mpFindProjectHome {
     local PROJECT=$1
-    local DIR="$MP_PROJECTS_ROOT/$PROJECT"
-    echo $DIR
+    for root in "${MP_PROJECTS_ROOT[@]}" ; do
+       local DIR="$root/$PROJECT"
+       if [ -d "$DIR" ] ; then
+           echo $DIR
+           return
+       fi
+    done
 }
 
 function mpSetDefault {
@@ -23,12 +40,13 @@ function mpSetDefault {
     if [ -z "$PROJECT" ] ; then
         echo "usage: mpSetDefault <PROJECTNAME>"
         echo "Suggestion: use one of"
-        mpListProjects
+        local -a projects=`mpListProjects`
+	echo "${projects[$@]}"
         return 1
     fi
 
 
-    local SETUPFILE="`mpFindSetupfile $PROJECT`"
+    local SETUPFILE="`mpFindSetupfile "$PROJECT"`"
 
     if [ ! -f "$SETUPFILE" ] ; then
         echo "Illegal Project Name $PROJECT: could not find setup file $SETUPFILE"
@@ -46,7 +64,12 @@ else
 	if [ -f "$MP_DEFAULT_PROJECT_LINK" ] ; then
 		. "$MP_DEFAULT_PROJECT_LINK"
 	fi
-	for p in `mpListProjects` ; do
-		alias $p=". \"$MP_BIN/mp-switch-current-project.sh\" $p"
+        declare -a projects=`mpListProjects`
+	echo -n "Available Projects: "
+	for p in "${projects[@]}" ; do
+		aliasname="`echo $p | sed "s/[ -]//g" `"
+		echo -n "'$aliasname' "
+		alias $aliasname=". \"$MP_BIN/mp-switch-current-project.sh\" \"$p\""
 	done
+        echo ""
 fi

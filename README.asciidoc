@@ -56,6 +56,12 @@ I put the following in my ~/.bashrc :
 	
 ---------------------------------------------
 
+NOTE: you can even specify multiple project roots, like
+---------------------------------------------
+»·······MP_PROJECTS_ROOT=("/home/klas/Projekte" "/home/klas/Privat/Projekte")
+---------------------------------------------
+
+
 2. Add a "setup-dev-env.sh" file to each relevant project
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
