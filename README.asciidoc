@@ -1,0 +1,41 @@
+MultiProjectSwitcher
+====================
+
+Helper scripts and conventions to support simple switching between different project setups.
+
+Daily Usage
+-----------
+
+The main goal of those scripts is to make my daily work easier, and to provide simple means to switch different contexts on the commandline. 
+
+
+Common aliases
+~~~~~~~~~~~~~~
+
+Each of my projectspecific setup-dev-env.sh files defines the variable CSW to point to the current source working directory
+and the alias "cdw" to change to this current source working directory.
+
+	CSW=$HOME/proj/someproject/
+	alias cdw="cd $CSW"  # Change to the main (source) working directory of the current project
+
+Shortcuts for Swichtching Context
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When the multiprojects environment is setup correctly, an alias will be created for each
+project. If you call that alias, the project-specific setup file will be sourced and your
+working directory will be changed to $CSW of the named project.
+
+--------------------------------------------
+	$ # Will setup my current shell for the project 'csnotes'
+	$ csnotes
+	$ # typing 'cdw' will now lead me to the main working directory of csnotes
+--------------------------------------------
+
+Setup
+-----
+
+---------------------------------------------
+	.bashrc
+---------------------------------------------
+
+
