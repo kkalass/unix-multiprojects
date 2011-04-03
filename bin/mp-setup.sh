@@ -11,6 +11,19 @@ function mpListProjects {
     echo ")"
 }
 
+#
+# Listet alle Verzeichnisse auf, die unterhalb eines der 
+# ProjectRoots sind
+#
+function mpListProjectCandidates {
+    echo "("
+    for root in "${MP_PROJECTS_ROOT[@]}" ; do
+        find "$root/"  -maxdepth 1 -mindepth 1 -type d | sed -n "s#$root/\([^/]*\)#\t\"\1\"#gp"
+    done
+    echo ")"
+
+}
+
 function mpFindSetupfile {
     local PROJECT=$1
     for root in "${MP_PROJECTS_ROOT[@]}" ; do
