@@ -6,7 +6,7 @@ MP_SETUPFILE_BASENAME=${MP_SETUPFILE_BASENAME=setup-dev-env.sh}
 function mpListProjects {
     echo "("
     for root in "${MP_PROJECTS_ROOT[@]}" ; do
-        find "$root/"  -maxdepth 2 -mindepth 1 -name "$MP_SETUPFILE_BASENAME" | sed -n "s#$root/\([^/]*\)/$MP_SETUPFILE_BASENAME#\t\"\1\"#gp"
+        find "$root"  -maxdepth 2 -mindepth 1 -name "$MP_SETUPFILE_BASENAME" | sed -n "s#$root/\([^/]*\)/$MP_SETUPFILE_BASENAME#\"\1\"#gp"
     done
     echo ")"
 }
@@ -18,7 +18,7 @@ function mpListProjects {
 function mpListProjectCandidates {
     echo "("
     for root in "${MP_PROJECTS_ROOT[@]}" ; do
-        find "$root/"  -maxdepth 1 -mindepth 1 -type d | sed -n "s#$root/\([^/]*\)#\t\"\1\"#gp"
+        find "$root"  -maxdepth 1 -mindepth 1 -type d | sed -n "s#$root/\([^/]*\)#\"\1\"#gp"
     done
     echo ")"
 
